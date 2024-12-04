@@ -251,11 +251,11 @@
 	};
 </script>
 
-<form class="flex flex-col items-center p-16 w-full">
+<form class="flex flex-col items-center md:p-16 p-8 w-full">
 	<h1 class="h1 mb-8">Reembolso fácil</h1>
 	<div class="w-full">
-		<div class="flex flex-row gap-8">
-			<div class="flex flex-col w-1/2">
+		<div class="flex md:flex-row flex-col gap-8">
+			<div class="flex flex-col md:w-1/2 w-full">
 				<label class="label mb-8">
 					<span>Imagem ida</span>
 					<input
@@ -274,21 +274,21 @@
 						accept=".jpg,.jpeg,.png"
 					/>
 				</label>
-				<label class="label mb-8">
+				<label class="label">
 					<span>Selecione o mês</span>
 					<input class="input" type="month" on:change={handleMonthChange} />
 				</label>
 				{#if maxDay && minDay}
-					<label class="label mb-8">
+					<label class="label mt-8">
 						<span>Dias</span>
-						<div class="flex flex-row flex-wrap items-center gap-4">
+						<div class="flex md:flex-row flex-col flex-wrap items-center gap-4">
 							{#each refund.days as day, index}
-								<div class="flex flex-row items-center gap-2">
+								<div class="flex flex-row items-center gap-2 md:w-auto w-full">
 									<input
 										min={minDay}
 										max={maxDay}
 										bind:value={day}
-										class="input w-48"
+										class="input md:w-auto w-full"
 										type="date"
 									/>
 									<button
@@ -300,7 +300,7 @@
 								</div>
 							{/each}
 							<button
-								class="btn-icon rounded-full w-8 h-8 variant-filled-primary cursor-pointer"
+								class="btn-icon rounded-full w-8 h-8 variant-filled-primary cursor-pointer md:self-center self-end"
 								on:click|preventDefault={addNewDay}
 							>
 								<i class="fa-solid fa-plus"></i>
@@ -309,22 +309,21 @@
 					</label>
 				{/if}
 			</div>
-			<div class="h-[60vh] w-1 bg-gray-400"></div>
-			<div class="flex flex-col w-1/2">
+			<div class="hidden md:block h-[60vh] w-1 bg-gray-400"></div>
+			<div class="flex flex-col md:w-1/2 w-full">
 				<label class="label mb-8">
-					<!-- <span class="block mb-4">Transportes:</span> -->
-					<div class="mb-8">
+					<div class="mb-4">
 						<h4 class="h4 mb-4">Tipo de transporte:</h4>
 						<div class="flex flex-row items-center gap-4">
 							<button
-								class="btn variant-filled-primary rounded-full"
+								class="btn variant-filled-primary rounded-full md:w-auto w-[50%]"
 								on:click={() => addNewTransport('Ônibus')}
 							>
 								<span>Ônibus</span>
 								<i class="fa-solid fa-bus"></i>
 							</button>
 							<button
-								class="btn variant-filled-primary rounded-full"
+								class="btn variant-filled-primary rounded-full md:w-auto w-[50%]"
 								on:click={() => addNewTransport('Metrô')}
 							>
 								<span>Metrô</span>
@@ -335,19 +334,19 @@
 					<hr class="" />
 					<div class="flex flex-col flex-wrap gap-4 !mt-8">
 						{#each refund.transports as transport, index}
-							<div class="flex flex-row items-center gap-4">
+							<div class="flex md:flex-row flex-col items-center gap-4">
 								{#if transport.type === 'Ônibus'}
-									<div class="flex flex-col gap-2">
+									<div class="flex flex-col gap-2 w-full">
 										<span>Linha</span>
 										<input
 											placeholder="Ex: 5324"
 											bind:value={transport.name}
-											class="input w-48"
+											class="input w-auto"
 											type="text"
 										/>
 									</div>
 								{/if}
-								<div class="flex flex-col gap-2">
+								<div class="flex flex-col gap-2 w-full">
 									<span>Valor Passagem (unitário)</span>
 									<MoneyInput
 										on:changeValue={({ detail }) => {
