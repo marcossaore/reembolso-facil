@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Toast, getToastStore } from '@skeletonlabs/skeleton';
-	import type { ToastSettings, ToastStore } from '@skeletonlabs/skeleton';
+	import { getToastStore } from '@skeletonlabs/skeleton';
+	import type { ToastSettings } from '@skeletonlabs/skeleton';
 	import MoneyInput from '$lib/components/MoneyInput.svelte';
 	import { formatToBRL } from '$lib/utils/money';
 	import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';

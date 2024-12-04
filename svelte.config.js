@@ -18,7 +18,7 @@ const config = {
 			fallback: '200.html'
 		}),
 		paths: {
-			base: '/reembolso-facil'
+			base: process.env.NODE_ENV === 'production'  ? '/reembolso-facil' : ''
 		}
 	}
 };
