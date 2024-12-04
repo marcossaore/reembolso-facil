@@ -236,6 +236,13 @@
 				return;
 			}
 		}
+
+		refund.days = refund.days.sort((a, b) => {
+			const dateA = new Date(a);
+			const dateB = new Date(b);
+			return dateA.getTime() - dateB.getTime();
+		});
+
 		const someDayIntheMonth = new Date(refund.days[0]);
 		monthName = translateMonthNameToBr(
 			someDayIntheMonth.toLocaleString('default', { month: 'short' })
