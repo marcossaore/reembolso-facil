@@ -65,7 +65,6 @@
 		resetDays();
 		const splitDate = event.target.value.split('-');
 		monthSelected = new Date(splitDate[0], splitDate[1], 0);
-		alert(monthSelected);
 		const minDayMonth = monthSelected;
 		minDay = minDayMonth.toISOString().split('T')[0];
 		const year = event.target.value.split('-')[0];
