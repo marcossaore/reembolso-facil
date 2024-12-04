@@ -133,9 +133,9 @@
 		};
 		let page = buildPage(pdfDoc, pdfOptions);
 		buildTitle(page, pdfOptions);
-		// await buildImage(pdfDoc, refund.goingImage, page, pdfOptions);
-		// await buildImage(pdfDoc, refund.backImage, page, pdfOptions);
-		// page = buildPage(pdfDoc, pdfOptions);
+		await buildImage(pdfDoc, refund.goingImage, page, pdfOptions);
+		await buildImage(pdfDoc, refund.backImage, page, pdfOptions);
+		page = buildPage(pdfDoc, pdfOptions);
 		buildTitle(page, pdfOptions);
 		buildDays(page, pdfOptions);
 		buildTransports(page, pdfOptions);
