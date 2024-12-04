@@ -9,6 +9,7 @@
 		goingImage: string;
 		backImage: string;
 		days: string[];
+		regime?: 'hibrid' | 'full';
 		transports: {
 			name?: string;
 			type: string;
@@ -25,7 +26,9 @@
 
 	let minDay: string;
 	let maxDay: string;
+	let monthIsSelected: boolean = false;
 	let monthName: string;
+	let monthSelected: Date;
 
 	const toastStore = getToastStore();
 
@@ -58,13 +61,42 @@
 	};
 
 	const handleMonthChange = (event: any) => {
+		monthIsSelected = true;
 		resetDays();
-		const minDayMonth = new Date(event.target.value + '-01');
+		const splitDate = (event.target.value.split('-'));
+		monthSelected = new Date(splitDate[0], splitDate[1], 0);
+		alert(monthSelected);
+		const minDayMonth = monthSelected;
 		minDay = minDayMonth.toISOString().split('T')[0];
 		const year = event.target.value.split('-')[0];
 		const month = event.target.value.split('-')[1];
 		const maxDayMonth = new Date(year, month, 0);
 		maxDay = maxDayMonth.toISOString().split('T')[0];
+		monthName = translateMonthNameToBr(
+			monthSelected.toLocaleDateString('en-US', { month: 'short' })
+		);
+	};
+
+	const handleRegimeChange = (event: any) => {
+		refund.regime = event.target.value;
+		if (refund.regime === 'full') {
+			const currentMonth = monthSelected.getMonth();
+			const currentYear = new Date().getFullYear();
+			const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+			refund.days = [];
+			for (let day = 1; day <= daysInMonth; day++) {
+				const date = new Date(currentYear, currentMonth, day);
+				if (date.getDay() === 6 || date.getDay() === 0) {
+					continue;
+				}
+				if (date.getMonth() !== currentMonth) {
+					break;
+				}
+				refund.days.push(date.toISOString().split('T')[0]);
+			}
+		} else {
+			refund.days = [''];
+		}
 	};
 
 	const addNewDay = () => {
@@ -102,9 +134,9 @@
 		};
 		let page = buildPage(pdfDoc, pdfOptions);
 		buildTitle(page, pdfOptions);
-		await buildImage(pdfDoc, refund.goingImage, page, pdfOptions);
-		await buildImage(pdfDoc, refund.backImage, page, pdfOptions);
-		page = buildPage(pdfDoc, pdfOptions);
+		// await buildImage(pdfDoc, refund.goingImage, page, pdfOptions);
+		// await buildImage(pdfDoc, refund.backImage, page, pdfOptions);
+		// page = buildPage(pdfDoc, pdfOptions);
 		buildTitle(page, pdfOptions);
 		buildDays(page, pdfOptions);
 		buildTransports(page, pdfOptions);
@@ -265,14 +297,14 @@
 			return;
 		}
 
-		if (refund.days.length === 0 || refund.days.includes('')) {
+		if (refund.days.length === 0) {
 			toast.message = 'Nenhum dia selecionado!';
 			toastStore.trigger(toast);
 			return;
 		}
 
 		if (refund.days.includes('')) {
-			toast.message = 'Se um dia estiver vazio, deve ser removido!';
+			toast.message = 'Se algum dia estiver vazio, deve ser removido!';
 			toastStore.trigger(toast);
 			return;
 		}
@@ -298,24 +330,23 @@
 			}
 		}
 
-		refund.days = [...new Set(refund.days)];
-
+		if (refund.regime === 'hibrid') {
+			refund.days = [...new Set(refund.days)];
+		}
+	
 		refund.days = refund.days.sort((a, b) => {
 			const dateA = new Date(a);
 			const dateB = new Date(b);
 			return dateA.getTime() - dateB.getTime();
 		});
 
-		const someDayIntheMonth = new Date(refund.days[0]);
-		monthName = translateMonthNameToBr(
-			someDayIntheMonth.toLocaleDateString('en-US', { month: 'short' })
-		);
 		refund.days = refund.days.map((day) => {
 			const daySplit = day.split('-');
 			return `${daySplit[2]}/${daySplit[1]}/${daySplit[0]}`;
 		});
 
 		const pdfBytes = await pdfBuider();
+
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' }));
 		link.download = `reembolso-${monthName}.pdf`;
@@ -325,7 +356,9 @@
 	};
 
 	const translateMonthNameToBr = (monthName: string) => {
-		monthName = (/\./.test(monthName) ? monthName.replace('.', '') : monthName).trim().toLowerCase();
+		monthName = (/\./.test(monthName) ? monthName.replace('.', '') : monthName)
+			.trim()
+			.toLowerCase();
 		switch (monthName) {
 			case 'jan':
 				return 'Janeiro';
@@ -357,8 +390,9 @@
 	};
 
 	const resetDays = () => {
+		refund.regime = undefined;
 		refund.days = [''];
-	}
+	};
 </script>
 
 <form class="flex flex-col items-center md:p-16 p-8 w-full">
@@ -384,13 +418,46 @@
 						accept=".jpg,.jpeg,.png"
 					/>
 				</label>
-				<label class="label">
+				<label class="label mb-8">
 					<span>Selecione o mês</span>
 					<input class="input" type="month" on:change={handleMonthChange} />
 				</label>
-				{#if maxDay && minDay}
+				{#if monthIsSelected}
+					<div class="flex flex-row items-center gap-4 md:w-auto w-full">
+						<label class="label label flex flex-row items-center gap-2">
+							<span>Híbrido</span>
+							<input
+								value="hibrid"
+								on:change={handleRegimeChange}
+								class="radio"
+								name="regime-type"
+								type="radio"
+								checked={refund.regime === 'hibrid'}
+							/>
+						</label>
+						<label class="label flex flex-row items-center gap-2">
+							<span>100% Presencial</span>
+							<input
+								value="full"
+								on:change={handleRegimeChange}
+								class="radio"
+								name="regime-type"
+								type="radio"
+								checked={refund.regime === 'full'}
+							/>
+						</label>
+					</div>
+				{/if}
+				{#if maxDay && minDay && refund.regime}
 					<label class="label mt-8">
-						<span>Dias</span>
+						<span class="block mb-4"
+							>Dias:
+							{#if refund.regime === 'full'}
+								<strong class=" !text-warning-500 text-lg font-bold ml-4"
+									>(Remova manualmente os feriados)
+								</strong>
+							{/if}
+						</span>
 						<div class="flex md:flex-row flex-col flex-wrap items-center gap-4">
 							{#each refund.days as day, index}
 								<div class="flex flex-row items-center gap-2 md:w-auto w-full">
