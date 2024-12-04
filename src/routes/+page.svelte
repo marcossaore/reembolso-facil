@@ -357,9 +357,9 @@
 			</div>
 			<div class="hidden md:block h-[60vh] w-1 bg-gray-400"></div>
 			<div class="flex flex-col md:w-1/2 w-full">
+				<h4 class="h4 mb-4">Tipo de transporte:</h4>
 				<label class="label mb-8">
 					<div class="mb-4">
-						<h4 class="h4 mb-4">Tipo de transporte:</h4>
 						<div class="flex flex-row items-center gap-4">
 							<button
 								class="btn variant-filled-primary rounded-full md:w-auto w-[50%]"
