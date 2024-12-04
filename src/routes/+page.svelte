@@ -58,9 +58,9 @@
 	};
 
 	const handleMonthChange = (event: any) => {
+		resetDays();
 		const minDayMonth = new Date(event.target.value + '-01');
 		minDay = minDayMonth.toISOString().split('T')[0];
-
 		const year = event.target.value.split('-')[0];
 		const month = event.target.value.split('-')[1];
 		const maxDayMonth = new Date(year, month, 0);
@@ -248,7 +248,7 @@
 		);
 		refund.days = refund.days.map((day) => {
 			const daySplit = day.split('-');
-			return `${daySplit[2]}-${daySplit[1]}-${daySplit[0]}`;
+			return `${daySplit[2]}/${daySplit[1]}/${daySplit[0]}`;
 		});
 
 		const pdfBytes = await pdfBuider();
@@ -257,7 +257,7 @@
 		link.download = `reembolso-${monthName}.pdf`;
 		link.click();
 
-		clear();
+		resetDays();
 	};
 
 	const translateMonthNameToBr = (monthName: string) => {
@@ -292,13 +292,8 @@
 		}
 	};
 
-	const clear = () => {
-		refund = {
-			goingImage: '',
-			backImage: '',
-			days: [''],
-			transports: []
-		};
+	const resetDays = () => {
+		refund.days = [''];
 	}
 </script>
 
