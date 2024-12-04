@@ -145,7 +145,7 @@
 		page.drawText('Dias:', {
 			x: 40,
 			y: pdfOptions.lastYPosition,
-			size: pdfOptions.textSize,
+			size: pdfOptions.titleSize,
 			font: pdfOptions.defaultFont,
 			color: rgb(0, 0, 0)
 		});
