@@ -1,7 +1,8 @@
 <script lang="ts">
 	import '../app.postcss';
-	export const prerender = true;
-	export const ssr = false;
+	import { initializeStores, Toast } from '@skeletonlabs/skeleton';
+	initializeStores();
 </script>
 
+<Toast />
 <slot />

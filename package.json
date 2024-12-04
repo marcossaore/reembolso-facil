@@ -40,7 +40,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@pdfme/common": "^5.2.8",
-    "@pdfme/generator": "^5.2.8"
+    "pdf-lib": "^1.17.1"
   }
 }
