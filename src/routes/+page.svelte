@@ -237,7 +237,7 @@
 			}
 		}
 		const someDayIntheMonth = new Date(refund.days[0]);
-		monthName = someDayIntheMonth.toLocaleString('default', { month: 'long' })
+		monthName = someDayIntheMonth.toLocaleString('default', { month: 'long' });
 		refund.days = refund.days.map((day) => {
 			const date = new Date(day);
 			const dayString = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
@@ -337,7 +337,10 @@
 							<div class="flex md:flex-row flex-col items-center gap-4">
 								{#if transport.type === 'Ônibus'}
 									<div class="flex flex-col gap-2 w-full">
-										<span>Linha</span>
+										<span>
+											<i class="fa-solid fa-bus"></i>
+											Linha - Ônibus
+										</span>
 										<input
 											placeholder="Ex: 5324"
 											bind:value={transport.name}
@@ -347,7 +350,12 @@
 									</div>
 								{/if}
 								<div class="flex flex-col gap-2 w-full">
-									<span>Valor Passagem (unitário)</span>
+									<div class="flex flex-col gap-2 w-full">
+										<span>
+											<i class="fa-solid fa-train"></i>
+											Metrô - Valor Passagem (unitário)
+										</span>
+									</div>
 									<MoneyInput
 										on:changeValue={({ detail }) => {
 											transport.ticketValue = detail.value;
