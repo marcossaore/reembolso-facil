@@ -121,7 +121,7 @@
 
 	const buildTitle = (page: any, pdfOptions: any) => {
 		pdfOptions.lastYPosition = page.getHeight() - 50;
-		page.drawText(`Reembolso do mês de ${monthName} Ida e Volta`, {
+		page.drawText(`Reembolso do mês de ${monthName} - Ida e Volta`, {
 			x: pdfOptions.defaultXPosition,
 			y: pdfOptions.lastYPosition,
 			size: pdfOptions.titleSize,
@@ -237,7 +237,9 @@
 			}
 		}
 		const someDayIntheMonth = new Date(refund.days[0]);
-		monthName = someDayIntheMonth.toLocaleString('default', { month: 'long' });
+		monthName = translateMonthNameToBr(
+			someDayIntheMonth.toLocaleString('default', { month: 'short' })
+		);
 		refund.days = refund.days.map((day) => {
 			const date = new Date(day);
 			const dayString = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
@@ -248,6 +250,38 @@
 		link.href = URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' }));
 		link.download = `reembolso-${monthName}.pdf`;
 		link.click();
+	};
+
+	const translateMonthNameToBr = (monthName: string) => {
+		monthName = (/\./.test(monthName) ? monthName.replace('.', '') : monthName).trim().toLowerCase();
+		switch (monthName) {
+			case 'jan':
+				return 'Janeiro';
+			case 'feb':
+				return 'Fevereiro';
+			case 'mar':
+				return 'Março';
+			case 'apr':
+				return 'Abril';
+			case 'may':
+				return 'Maio';
+			case 'jun':
+				return 'Junho';
+			case 'jul':
+				return 'Julho';
+			case 'aug':
+				return 'Agosto';
+			case 'sep':
+				return 'Setembro';
+			case 'oct':
+				return 'Outubro';
+			case 'nov':
+				return 'Novembro';
+			case 'dec':
+				return 'Dezembro';
+			default:
+				return monthName;
+		}
 	};
 </script>
 
@@ -352,8 +386,8 @@
 								<div class="flex flex-col gap-2 w-full">
 									<div class="flex flex-col gap-2 w-full">
 										<span>
-											<i class="fa-solid fa-train"></i>
-											Metrô - Valor Passagem (unitário)
+											<i class="fa-solid fa-{transport.type === 'Ônibus' ? 'bus' : 'train'}"></i>
+											{transport.type === 'Ônibus' ? 'Ônibus' : 'Metrô'} - Valor Passagem (unitário)
 										</span>
 									</div>
 									<MoneyInput
