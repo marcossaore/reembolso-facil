@@ -63,7 +63,7 @@
 	const handleMonthChange = (event: any) => {
 		monthIsSelected = true;
 		resetDays();
-		const splitDate = (event.target.value.split('-'));
+		const splitDate = event.target.value.split('-');
 		monthSelected = new Date(splitDate[0], splitDate[1], 0);
 		alert(monthSelected);
 		const minDayMonth = monthSelected;
@@ -333,7 +333,7 @@
 		if (refund.regime === 'hibrid') {
 			refund.days = [...new Set(refund.days)];
 		}
-	
+
 		refund.days = refund.days.sort((a, b) => {
 			const dateA = new Date(a);
 			const dateB = new Date(b);
@@ -532,15 +532,15 @@
 											<i class="fa-solid fa-{transport.type === 'Ônibus' ? 'bus' : 'train'}"></i>
 											{transport.type === 'Ônibus' ? 'Ônibus' : 'Metrô'} - Valor Passagem (unitário)
 										</span>
+										<MoneyInput
+											on:changeValue={({ detail }) => {
+												transport.ticketValue = detail.value;
+											}}
+										/>
 									</div>
-									<MoneyInput
-										on:changeValue={({ detail }) => {
-											transport.ticketValue = detail.value;
-										}}
-									/>
 								</div>
 								<button
-									class="btn-icon rounded-full w-10 h-10 variant-filled-error cursor-pointer self-end mt-1"
+									class="btn-icon rounded-full w-10 h-10 variant-filled-error cursor-pointer self-end"
 									on:click|preventDefault={() => removeTransport(index)}
 								>
 									<i class="fa-solid fa-minus"></i>

@@ -6,7 +6,6 @@
 	export let required: boolean = false;
 	export let disabled: boolean = false;
 	let isFocused: boolean = false;
-	let applyStyle: string;
 	let valueNumber: number;
 	let input: HTMLInputElement;
 
@@ -31,12 +30,13 @@
 </script>
 
 <div class={containerClass}>
-	<div class="relative input-group input-group-divider grid-cols-[auto_1fr_auto]">
-		<div class="input-group-shim {applyStyle}">
+	<div class="relative input-group input-group-divider grid-cols-[auto_1fr_1fr]">
+		<div class="input-group-shim">
 			<i class="fa-solid fa-brazilian-real-sign"></i>
 		</div>
 
 		<input
+			class="input"
 			bind:this={input}
 			on:focus={() => (isFocused = true)}
 			on:blur={() => (isFocused = false)}
