@@ -10,7 +10,7 @@
 		backImage: string;
 		days: string[];
 		transports: {
-			name: string;
+			name?: string;
 			type: string;
 			ticketValue: number;
 		}[];
@@ -106,7 +106,8 @@
 		await buildImage(pdfDoc, refund.backImage, page, pdfOptions);
 		page = buildPage(pdfDoc, pdfOptions);
 		buildTitle(page, pdfOptions);
-		buildInfo(page, pdfOptions);
+		buildDays(page, pdfOptions);
+		buildTransports(page, pdfOptions);
 		buildTotal(page, pdfOptions);
 		return pdfDoc.save();
 	};
@@ -139,42 +140,103 @@
 		});
 	};
 
-	const buildInfo = (page: any, pdfOptions: any) => {
-		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 30;
-		page.drawText('Dias e transportes:', {
+	const buildDays = (page: any, pdfOptions: any) => {
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 40;
+		page.drawText('Dias:', {
 			x: 40,
 			y: pdfOptions.lastYPosition,
 			size: pdfOptions.textSize,
 			font: pdfOptions.defaultFont,
 			color: rgb(0, 0, 0)
 		});
+
 		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 30;
-		refund.days.forEach((day) => {
-			page.drawText(`${day}`, {
-				x: 40,
-				y: pdfOptions.lastYPosition,
-				size: pdfOptions.textSize,
-				font: pdfOptions.defaultFont,
-				color: rgb(0, 0, 0)
-			});
 
-			const transports = refund.transports
-				.map((transport) => {
-					return `${transport.type} ${transport.name ? `- ${transport.name}` : ''}  - ${formatToBRL(transport.ticketValue)} - (x2)`;
-				})
-				.join('\n');
+		let days = '';
+		for (let index = 0; index < refund.days.length; index++) {
+			const count7Days = (index + 1) % 7 === 0;
+			const isThere7DaysInLineOrIsLastDay = count7Days || refund.days?.[index + 1] === undefined;
+			const writeDashOrSpace = isThere7DaysInLineOrIsLastDay ? ' ' : ' - ';
+			const shouldSkipLine = isThere7DaysInLineOrIsLastDay ? '\n' : '';
+			days += `${refund.days[index]} ${writeDashOrSpace} ${shouldSkipLine}`;
+		}
 
-			pdfOptions.lastYPosition = pdfOptions.lastYPosition - 25;
+		page.drawText(days, {
+			x: 40,
+			y: pdfOptions.lastYPosition,
+			size: pdfOptions.textSize,
+			font: pdfOptions.defaultFont,
+			color: rgb(0, 0, 0)
+		});
 
-			page.drawText(transports, {
-				x: 40,
-				y: pdfOptions.lastYPosition,
-				size: pdfOptions.textSize,
-				font: pdfOptions.defaultFont,
-				color: rgb(0, 0, 0)
-			});
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - (refund.days.length / 7) * 30;
 
-			pdfOptions.lastYPosition = pdfOptions.lastYPosition - refund.transports.length * 25 - 25;
+		const totalDays = refund.days.length;
+
+		page.drawText(`Total de dias: ${totalDays}`, {
+			x: 460,
+			y: pdfOptions.lastYPosition,
+			size: pdfOptions.titleSize,
+			font: pdfOptions.defaultFont,
+			color: rgb(0, 0, 0)
+		});
+
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 15;
+
+		page.drawSvgPath('M 0 0 L 525 0', {
+			x: 40,
+			y: pdfOptions.lastYPosition,
+			borderColor: rgb(0, 0, 0),
+			borderWidth: 1
+		});
+	};
+
+	const buildTransports = (page: any, pdfOptions: any) => {
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 40;
+
+		const transports = refund.transports
+			.map((transport) => {
+				return `${transport.type} ${transport.name ? `- ${transport.name}` : ''}  - ${formatToBRL(transport.ticketValue)} - (x2)`;
+			})
+			.join('\n');
+
+		page.drawText('Transportes:', {
+			x: 40,
+			y: pdfOptions.lastYPosition,
+			size: pdfOptions.titleSize,
+			font: pdfOptions.defaultFont,
+			color: rgb(0, 0, 0)
+		});
+
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 30;
+
+		page.drawText(transports, {
+			x: 40,
+			y: pdfOptions.lastYPosition,
+			size: pdfOptions.textSize,
+			font: pdfOptions.defaultFont,
+			color: rgb(0, 0, 0)
+		});
+
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - refund.transports.length * 30;
+
+		page.drawSvgPath('M 0 0 L 525 0', {
+			x: 40,
+			y: pdfOptions.lastYPosition,
+			borderColor: rgb(0, 0, 0),
+			borderWidth: 1
+		});
+
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 40;
+
+		const totalTransports = refund.transports.length * 2;
+
+		page.drawText(`Passagens por dia: ${totalTransports}`, {
+			x: 430,
+			y: pdfOptions.lastYPosition,
+			size: pdfOptions.titleSize,
+			font: pdfOptions.defaultFont,
+			color: rgb(0, 0, 0)
 		});
 	};
 
@@ -183,10 +245,12 @@
 			return prev + next.ticketValue;
 		}, 0);
 		const total = totalTransports * 2 * refund.days.length;
+		pdfOptions.lastYPosition = pdfOptions.lastYPosition - 30;
 		page.drawText(`Total: ${formatToBRL(total)}`, {
-			x: 400,
-			y: 40,
-			size: 18,
+			x: 430,
+			y: pdfOptions.lastYPosition,
+			size: pdfOptions.titleSize,
+			font: pdfOptions.defaultFont,
 			color: rgb(0, 0, 0)
 		});
 	};
