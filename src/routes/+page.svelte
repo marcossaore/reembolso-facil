@@ -30,7 +30,6 @@
 	const toastStore = getToastStore();
 
 	const handleGoingFileChange = (event: any) => {
-		console.log(event.target.files[0]);
 		const canvas = document.createElement('canvas');
 		const ctx = canvas.getContext('2d');
 		const img = new Image();
@@ -45,7 +44,6 @@
 	};
 
 	const handleBackFileChange = (event: any) => {
-		console.log(event.target.files[0]);
 		const canvas = document.createElement('canvas');
 		const ctx = canvas.getContext('2d');
 		const img = new Image();
@@ -60,7 +58,6 @@
 	};
 
 	const handleMonthChange = (event: any) => {
-		console.log(event.target.value);
 		const minDayMonth = new Date(event.target.value + '-01');
 		minDay = minDayMonth.toISOString().split('T')[0];
 
@@ -163,7 +160,7 @@
 
 			const transports = refund.transports
 				.map((transport) => {
-					return `${transport.type} ${transport.name ? `- ${transport.name}` : ''}  - R$ ${transport.ticketValue} - (x2)`;
+					return `${transport.type} ${transport.name ? `- ${transport.name}` : ''}  - ${formatToBRL(transport.ticketValue)} - (x2)`;
 				})
 				.join('\n');
 
@@ -237,6 +234,8 @@
 			}
 		}
 
+		refund.days = [...new Set(refund.days)];
+
 		refund.days = refund.days.sort((a, b) => {
 			const dateA = new Date(a);
 			const dateB = new Date(b);
@@ -245,18 +244,20 @@
 
 		const someDayIntheMonth = new Date(refund.days[0]);
 		monthName = translateMonthNameToBr(
-			someDayIntheMonth.toLocaleString('default', { month: 'short' })
+			someDayIntheMonth.toLocaleDateString('en-US', { month: 'short' })
 		);
 		refund.days = refund.days.map((day) => {
-			const date = new Date(day);
-			const dayString = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
-			return dayString;
+			const daySplit = day.split('-');
+			return `${daySplit[2]}-${daySplit[1]}-${daySplit[0]}`;
 		});
+
 		const pdfBytes = await pdfBuider();
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' }));
 		link.download = `reembolso-${monthName}.pdf`;
 		link.click();
+
+		clear();
 	};
 
 	const translateMonthNameToBr = (monthName: string) => {
@@ -290,6 +291,15 @@
 				return monthName;
 		}
 	};
+
+	const clear = () => {
+		refund = {
+			goingImage: '',
+			backImage: '',
+			days: [''],
+			transports: []
+		};
+	}
 </script>
 
 <form class="flex flex-col items-center md:p-16 p-8 w-full">
