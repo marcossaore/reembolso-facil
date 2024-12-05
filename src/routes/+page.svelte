@@ -64,7 +64,8 @@
 		monthIsSelected = true;
 		resetDays();
 		const splitDate = event.target.value.split('-');
-		monthSelected = new Date(splitDate[0], splitDate[1], 0);
+		const monthParse = parseInt(splitDate[1]) - 1;
+		monthSelected = new Date(splitDate[0], monthParse, 1);
 		const minDayMonth = monthSelected;
 		minDay = minDayMonth.toISOString().split('T')[0];
 		const year = event.target.value.split('-')[0];
@@ -80,16 +81,15 @@
 		refund.regime = event.target.value;
 		if (refund.regime === 'full') {
 			const currentMonth = monthSelected.getMonth();
-			const currentYear = new Date().getFullYear();
-			const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+			const currentYear = monthSelected.getFullYear();
 			refund.days = [];
-			for (let day = 1; day <= daysInMonth; day++) {
+			for (let day = 1; day <= 31; day++) {
 				const date = new Date(currentYear, currentMonth, day);
-				if (date.getDay() === 6 || date.getDay() === 0) {
-					continue;
-				}
 				if (date.getMonth() !== currentMonth) {
 					break;
+				}
+				if (date.getDay() === 6 || date.getDay() === 0) {
+					continue;
 				}
 				refund.days.push(date.toISOString().split('T')[0]);
 			}
